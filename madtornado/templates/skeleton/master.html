@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>{% block title %}{% end %}</title>
+    <!-- -->
+
+    <!--path:@@@路径设置口+属性-->
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="x5-fullscreen" content="false">
+    <meta name="full-screen" content="no">
+    <meta name="apple-mobile-web-app-capable" content="no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=1"/>
+    <meta name="keywords" content="{% block keywords %}{% end %}"/>
+    <meta name="description" content="{% block description %}{% end %}"/>
+
+    <!--path:@@@路径设置口+图标-->
+    <link rel="shortcut icon" href="{{ static_url("img/favicon.ico") }}"/>
+    <link rel="bookmark" type="image/x-icon" href="{{ static_url("img/favicon.ico") }}"/>
+
+    <!--path:@@@路径设置口+样式-->
+    <link rel="stylesheet" type="text/css" href="{{ static_url("css/style.css") }}">
+    {% block css %}{% end %}
+
+    <!--path:@@@路径设置口+样式拓展-->
+    <style>
+
+    </style>
+    {% block style %}{% end %}
+</head>
+
+<body>
+
+<!--path:@@@页面区域+头部[#header]-->
+<header id="header">
+    {% block header %}{% end %}
+</header>
+
+<!--path:@@@页面区域+主体[#main]-->
+<section id="main">
+    {% block main %}{% end %}
+</section>
+
+<!--path:@@@页面区域+底部[#footer]-->
+<footer id="footer">
+    {% block footer %}{% end %}
+</footer>
+
+<!--path:@@@页面区域+拓展[#aside]-->
+<aside id="aside">
+    {% block aside %}{% end %}
+</aside>
+
+<!--path:@@@路径设置口+脚本-->
+<script type="application/javascript" src="{{ static_url("js/load.js") }}"></script>
+{% block js %}{% end %}
+
+<!--path:@@@路径设置口+脚本拓展-->
+<script>
+
+</script>
+{% block script %}{% end %}
+</body>
+</html>

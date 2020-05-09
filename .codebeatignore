@@ -1,0 +1,8 @@
+docs/
+
+madtornado/config/*
+madtornado/data/*
+madtornado/log/*
+madtornado/resource/*
+madtornado/statics/*
+madtornado/templates/*

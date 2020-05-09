@@ -1,0 +1,49 @@
+os: linux
+language: python
+python:
+  - "3.7"
+branches:
+  only:
+    - master
+    - develop
+stages:
+  - name: madtornado
+  - name: test
+jobs:
+  include:
+    - stage: test
+      name: "test-1"
+      env:
+        - GITHUB=https://github.com/SystemLight/madtornado
+      script:
+        - echo i am test-1
+    - stage: test
+      name: "test-2"
+      env:
+        - GITHUB=https://github.com/SystemLight/madtornado
+      script:
+        - echo i am test-2
+    - stage: madtornado
+      name: "madtornado-1"
+      env:
+        - GITHUB=https://github.com/SystemLight/madtornado
+      before_install:
+        - echo before_install
+      install:
+        - pip install -r requirements.txt
+        - pip install setuptools
+        - pip install wheel
+        - pip install twine
+      before_script:
+        - echo before_script
+        - find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf
+      script:
+        - echo script
+        - python ./sea.py --sync_version
+        - python ./sea.py --init_release
+      after_success:
+        - echo $TRAVIS_TEST_RESULT
+      after_failure:
+        - echo $TRAVIS_TEST_RESULT
+      after_script:
+        - echo after_script

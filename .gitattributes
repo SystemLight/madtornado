@@ -1,0 +1,8 @@
+docs/* linguist-vendored
+
+madtornado/config/* linguist-vendored
+madtornado/data/* linguist-vendored
+madtornado/log/* linguist-vendored
+madtornado/resource/* linguist-vendored
+madtornado/statics/* linguist-vendored
+madtornado/templates/* linguist-vendored

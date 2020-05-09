@@ -1,0 +1,30 @@
+<h1>hello madtornado</h1>
+<div>
+    <h1>默认全局转义</h1>
+    <hr/>
+</div>
+<div>
+    <h1>模板去转义</h1>
+    {% autoescape None %}
+    <hr/>
+</div>
+<div>
+    <h1>局部去转义</h1>
+    {% raw mirror_page %}
+    <hr/>
+</div>
+<div>
+    <h1>局部转义</h1>
+    {{ escape(mirror_page) }}
+    <hr/>
+</div>
+<div>
+    <h1>自定义方法</h1>
+    {{ hello_method() }}
+    <hr/>
+</div>
+<div>
+    <h1>自定义模块</h1>
+    {% module hello_module() %}
+    <hr/>
+</div>
