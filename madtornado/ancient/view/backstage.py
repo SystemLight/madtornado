@@ -40,7 +40,7 @@ class AdminHandler(Base):
 
     # @override
     async def get(self):
-        await self.render("aTorTemplate.html", mirror_page="mirror_page")
+        await self.render("aTorTemplate.html", mirror_page="上游传参")
 
     # @override
     async def post(self):

@@ -21,9 +21,10 @@ PyPI page: https://pypi.python.org/pypi/madtornado
 - 拓展了tornado handler的方法，如果你想使用原生的tornado handler请继承RequestHandler，否则请继承handler.inheritHandler里面的Base
 - 开箱即用，通过在ancient下的view中编写模块，内置两个前台和后台模块，可以自行增加或删除，也可以通过（注意需要在madtornado根目录下运行）sea -np快速创建
 - 内置sea命令行工具，不仅能快速创建madtornado项目，还同时包含一些快捷操作和madtornado进行交互便于开发
+- 手机端测试查找地址，通过扫控制台打印的二维码快速定位，需要配置network_index指定打印的网卡，0代表不打印二维码
 
 # 未来计划添加特性
-- 优化手机端测试查找地址，通过扫控制台打印的二维码快速定位
+
 - 强化虚拟主机配置能力
 - 增强sql模块处理能力，采用链式查找方式，更加灵活
 - 增加注册路由描述功能，帮助生成网站地图时添加描述信息 

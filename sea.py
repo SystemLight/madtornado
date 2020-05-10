@@ -145,7 +145,7 @@ class InitRelease:
 
         self.dir_list = ["madtornado/ancient", "madtornado/config", "madtornado/data", "madtornado/log",
                          "madtornado/resource", "madtornado/statics", "madtornado/templates"]
-        self.file_list = ["madtornado/server.py", ".gitignore", "README.md"]
+        self.file_list = ["madtornado/server.py", ".gitignore", "README.md", "LICENSE"]
 
         self.work_path = os.getcwd()
         self.sea_abs_path = os.path.abspath(__file__)
