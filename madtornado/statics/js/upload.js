@@ -70,6 +70,7 @@ function upload2madtornado(fileEl, suffix, address) {
     }
 }
 
+// 拥有超时能力的fetch api
 function fetchTime(address, init, overTime) {
     // 可以设置超时时间
     return new Promise(function (resolve, reject) {
@@ -81,6 +82,7 @@ function fetchTime(address, init, overTime) {
         });
     });
 }
+
 
 // 请求文件上传
 function fetchFile(address, md5, block, data, overTime) {
@@ -121,7 +123,7 @@ FileForeach.prototype.forEach = function (callback) {
 };
 
 FileForeach.prototype.isOutRange = function () {
-    return this.currentChunk > this.chunks;
+    return this.currentChunk >= this.chunks;
 };
 
 FileForeach.prototype.nextLoad = function () {

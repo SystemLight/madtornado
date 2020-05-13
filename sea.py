@@ -515,8 +515,8 @@ from ..rig import register""")
             else:
                 recp = """
 
-@register.route(use=register.PRT)
-class RouteHandler(BaseHandler):
+@register.route()
+class RouteHandler(Base):
 
     async def get(self):
         await self.render("aTorTemplate.html", mirror_page="<h1>前台页面</h1>")

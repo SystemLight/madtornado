@@ -4,7 +4,7 @@ import os
 import shutil
 import uuid
 import hashlib
-from typing import Iterable, Tuple, Optional
+from typing import Iterable, Tuple, Optional, Union
 
 option = parser.options("file")
 print("[syncFile] is imported.\n")
@@ -25,10 +25,11 @@ class Component:
     """
 
     def __init__(self, path="", top_path=None):
-        if top_path:
-            self.root_path = self.ajoin(top_path, path)
-        else:
-            self.root_path = self.ajoin(option["path"], path)
+        if not top_path:
+            top_path = option["path"]
+
+        self.root_path = self.ajoin(top_path, path)
+        self.rel_root_path = self.join(top_path, path)
 
         self.write_chunk = self.read_chunk = 65536
         self.write_fp = self.read_fp = None
@@ -59,22 +60,6 @@ class Component:
         return os.path.normpath(os.path.join(*args))
 
     @staticmethod
-    def ensure_dir(path: str) -> bool:
-        """
-
-        确保文件夹存在，不存在则创建它
-
-        :param path: 文件夹路径
-        :return: 返回判断之前是否存在该文件
-
-        """
-        if os.path.exists(path):
-            return True
-        else:
-            os.makedirs(path)
-            return False
-
-    @staticmethod
     def touch(path: str) -> None:
         """
 
@@ -85,6 +70,24 @@ class Component:
 
         """
         open(path, "wb").close()
+
+    def ensure_dir(self, path: Union[str] = None) -> bool:
+        """
+
+        确保文件夹存在，不存在则创建它
+
+        :param path: 文件夹路径
+        :return: 返回判断之前是否存在该文件
+
+        """
+        if path is None:
+            path = self.root_path
+
+        if os.path.exists(path):
+            return True
+        else:
+            os.makedirs(path)
+            return False
 
     def get_safe_path(self, *args) -> str:
         """
@@ -246,7 +249,7 @@ class Component:
         :param arg_name: 参数名称
         :param is_only: 是否生成唯一ID文件名
         :param file_name: 当is_only=False时，提供的自定义文件名称，如果不提供则来自上传的文件名，拓展名以上传文件为准无需附加
-        :return: (文件名称[不携带拓展名]，文件保存本地地址，文件拓展名)
+        :return: (文件名称[不携带拓展名]，文件拓展名，文件相对服务器保存路径)
 
         """
         file_list = files.get(arg_name, None)
@@ -273,4 +276,19 @@ class Component:
         save_path = self.get_safe_path(name + source_ext)
         self.write(save_path, source_file.body)
 
-        return name, source_ext, save_path
+        return name, source_ext, self.join(self.rel_root_path, name + source_ext)
+
+    @staticmethod
+    def rollback_receive_file(path: str) -> None:
+        """
+
+        有时接收文件后将接收的文件名传入到数据库中，如果这时数据库错误需要回退操作，那么你可以使用该方法删除接收的文件，实现回退
+
+        :param path: 文件路径
+        :return: None
+
+        """
+        try:
+            os.remove(path)
+        except FileNotFoundError:
+            pass
