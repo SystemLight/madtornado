@@ -32,16 +32,14 @@ class ExistFileHandler(Base):
     """
 
     async def get(self):
-        md5 = self.get_argument("md5", None)
-        suffix = self.get_argument("suffix", None)
+        md5 = self.get_argument("md5")
+        suffix = self.get_argument("suffix")
 
-        if md5 and suffix:
-            file_context = syncFile.Component("files")
-            try:
-                self.write_dict({"ieExist": file_context.is_exist_md5(md5, suffix)})
-            except AssertionError as ae:
-                ...
-        self.throw(406)
+        file_context = syncFile.Component("files")
+        try:
+            self.write_dict({"ieExist": file_context.is_exist_md5(md5, suffix)})
+        except AssertionError as ae:
+            self.throw(406, "非法请求")
 
 
 # @file_router.route(url="/upload")
@@ -64,7 +62,8 @@ class UploadFileHandler(Base):
     async def post(self):
         """
 
-        文件上传接口方法实现
+        文件上传接口方法实现，参数处理比较复杂，新版本可以更加简洁，
+        但是为了不破坏其它内容，并未修改逻辑
 
         """
         # 设置允许跨域
@@ -95,7 +94,7 @@ class UploadFileHandler(Base):
                 self.write_ok()
 
             except AssertionError as ae:
-                self.throw(403)
+                self.throw(406, "非法请求")
         else:
             self.throw(406, "缺少{0}参数".format(message.key))
 
@@ -135,11 +134,11 @@ class MergeFileHandler(Base):
         try:
             fragment_path = frc.get_safe_path(md5)
         except AssertionError:
-            return self.throw(406, "参数格式错误")
+            return self.throw(406, "非法请求")
 
         for b in fc.md5_to_file(fragment_path, md5, suffix):
             if not b:
-                self.throw(400, "请求无法完成")
+                self.throw(400, "请求无法完成，未知错误")
             await gen.sleep(0)
 
         self.write_ok()

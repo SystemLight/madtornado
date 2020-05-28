@@ -5,6 +5,7 @@
 [![codebeat badge](https://codebeat.co/badges/da82dbdb-eceb-4166-b9e9-2d290c5f608f)](https://codebeat.co/projects/github-com-systemlight-madtornado-master)
 [![Build Status](https://travis-ci.org/SystemLight/madtornado.svg?branch=master)](https://travis-ci.org/SystemLight/madtornado)
 [![Documentation Status](https://readthedocs.org/projects/madtornado/badge/?version=latest)](https://madtornado.readthedocs.io/zh/latest/?badge=latest)
+[![Gitter](https://badges.gitter.im/systemlight-madtornado/community.svg)](https://gitter.im/systemlight-madtornado/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 madtornado是一个tornado框架的快速构建工具   
 PyPI page: https://pypi.python.org/pypi/madtornado
@@ -105,6 +106,8 @@ class IndexHandler(BaseHandler):
 
 ```
 sea --new_recp %madtornado_project%\ancient\view\reception.py
+或者使用下面的简化版，但是要在madtornado根目录下执行且reception是指定要添加路由的模块的名称
+sea -nr reception
 ```
 
 ## 目录说明
@@ -125,22 +128,22 @@ sea --new_recp %madtornado_project%\ancient\view\reception.py
     server.py   程序主入口，通过运行该文件来启动madtornado提供web服务吧
 ```
 
-#### ancient
+#### ancient下包说明
 
 ```
-custom
+custom 自定义模板引擎方法的模块存放位置
 
-handlers
+handlers  路由核心模块，view中的路由一般会继承该包下inheritHandler中的Base类，且你可以在这里更换Base变量指向来让全局的路由更换基类
 
-model
+model  存放模型的位置
 
-module
+module  存放模块的位置，包含拓展的sql，file等操作模块
 
-rig
+rig  存放一些额外工具的地方，其中register是路由注册模块，通过引入该模块，让路由可以被注册到路由表中
 
-user
+user  使用者独立的空间，你可以根据喜好放置任何内容
 
-view
+view  核心工作区域，你可以把所有路由写入一个模块中也可以把不同路由按照模块进行区分，内置三个模块示例均可删除，其中upload.py是大文件分块上传示例，可以直接把注册代码的注释取消掉即可使用
 ```
 
 # 通过配置文件配置madtornado
