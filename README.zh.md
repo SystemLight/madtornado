@@ -8,7 +8,8 @@
 [![Gitter](https://badges.gitter.im/systemlight-madtornado/community.svg)](https://gitter.im/systemlight-madtornado/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 madtornado是一个tornado框架的快速构建工具   
-PyPI page: https://pypi.python.org/pypi/madtornado
+PyPI page: https://pypi.python.org/pypi/madtornado  
+[原生tornado文档参考](https://www.osgeo.cn/tornado/index.html)
 
 # 拥有的特性
 

@@ -321,7 +321,7 @@ class Sea:
 
         new_group.add_argument("-np", action="store_true", help="create a route in view")
         new_group.add_argument("-nt", action="store_true", help="create a template page")
-        new_group.add_argument("-nv", action="store_true", help="create a view module")
+        new_group.add_argument("-nv", nargs="?", metavar="view name", help="create a view module")
         new_group.add_argument("-nr", nargs="?", metavar="module name", help="create a route in view")
 
         init_group = self.arg_parse.add_argument_group("init")
@@ -346,8 +346,8 @@ class Sea:
             os.path.join(self.user_abs_path, "./templates", "index-[{}].html".format(int(time.time()))))
 
     def nv(self, path):
-        self.new_page(
-            os.path.join(self.user_abs_path, "./ancient/view", "new-[{}].py".format(int(time.time()))))
+        self.new_view(
+            os.path.join(self.user_abs_path, "./ancient/view", "{}.py".format(path)))
 
     def nr(self, path):
         self.new_route(
