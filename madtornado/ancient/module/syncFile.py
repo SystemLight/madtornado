@@ -292,3 +292,40 @@ class Component:
             os.remove(path)
         except FileNotFoundError:
             pass
+
+
+def insert2fp(file_path, offset, content, per_size=2048):
+    """
+
+    允许你在文件指定位置进行内容插入
+
+    :param file_path: 文件路径
+    :param offset: 文件偏移位置
+    :param content: 插入的内容
+    :param per_size: 每片读取大小限制
+    :return: None
+
+    """
+    copies = offset // per_size
+
+    f_dir, f_name = os.path.split(file_path)
+    temp_path = os.path.join(f_dir, f_name + ".temp")
+
+    with open(temp_path, "w") as w_fp:
+        with open(file_path, "r") as fp:
+            fp.seek(0)
+
+            for c in range(1, copies + 1 + int(offset % per_size > 0)):
+                if c * per_size >= offset:
+                    result = fp.read(offset - fp.tell())
+                else:
+                    result = fp.read(per_size)
+                w_fp.write(result)
+
+            w_fp.write(content)
+
+            for c in fp:
+                w_fp.write(c)
+
+    os.remove(file_path)
+    os.rename(temp_path, file_path)

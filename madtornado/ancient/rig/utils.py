@@ -238,7 +238,7 @@ def rectangular_factor(x0, y0, x1, y1):
     :return: Rectangular
 
     """
-    return Rectangular(x0, y0, x1 - x1, y1 - y0)
+    return Rectangular(x0, y0, x1 - x0, y1 - y0)
 
 
 class Rectangular:
