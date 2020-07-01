@@ -145,7 +145,7 @@ class InitRelease:
 
         self.dir_list = ["madtornado/ancient", "madtornado/config", "madtornado/data", "madtornado/log",
                          "madtornado/resource", "madtornado/statics", "madtornado/templates"]
-        self.file_list = ["madtornado/server.py", ".gitignore", "README.md"]
+        self.file_list = ["madtornado/server.py", ".gitignore", "README.md", "LICENSE"]
 
         self.work_path = os.getcwd()
         self.sea_abs_path = os.path.abspath(__file__)
@@ -321,7 +321,7 @@ class Sea:
 
         new_group.add_argument("-np", action="store_true", help="create a route in view")
         new_group.add_argument("-nt", action="store_true", help="create a template page")
-        new_group.add_argument("-nv", action="store_true", help="create a view module")
+        new_group.add_argument("-nv", nargs="?", metavar="view name", help="create a view module")
         new_group.add_argument("-nr", nargs="?", metavar="module name", help="create a route in view")
 
         init_group = self.arg_parse.add_argument_group("init")
@@ -346,8 +346,8 @@ class Sea:
             os.path.join(self.user_abs_path, "./templates", "index-[{}].html".format(int(time.time()))))
 
     def nv(self, path):
-        self.new_page(
-            os.path.join(self.user_abs_path, "./ancient/view", "new-[{}].py".format(int(time.time()))))
+        self.new_view(
+            os.path.join(self.user_abs_path, "./ancient/view", "{}.py".format(path)))
 
     def nr(self, path):
         self.new_route(
@@ -515,8 +515,8 @@ from ..rig import register""")
             else:
                 recp = """
 
-@register.route(use=register.PRT)
-class RouteHandler(BaseHandler):
+@register.route()
+class RouteHandler(Base):
 
     async def get(self):
         await self.render("aTorTemplate.html", mirror_page="<h1>前台页面</h1>")

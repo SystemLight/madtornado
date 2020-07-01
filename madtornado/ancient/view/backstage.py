@@ -13,12 +13,11 @@ class AdminHandler(Base):
     碎碎念::
 
         想要做到高并发，一定不要写成同步代码，单线程是由程序中的await进行上下文切换的，
-        网络非同步并发请使用gen.WaitIterator([])，这个返回是无序的，请求快先返回，有序的
-        并发可使用gen.multi([])，它会等待所有并发任务都返回时返回一个任务列表，如果程序中
-        实在无法避免阻塞的任务，请使用await IOLoop.current().run_in_executor(None, blocking_func, args)，
-        强烈不建议。如果你不知道协程怎么工作的，建议使用同步线程的框架。传递给multi和WaitIterator对象时，
-        使用gen.convert_yielded将coroutine转换成Future对象再进行参数传递，或者直接传递一个包含协程的列表做参数,
-        如果你不知道coroutine和Future关系，建议了解后使用。
+        每一个路由都是一个协程，而这些协程中仍然可以通过gen.WaitIterator([])，gen.multi([])
+        等方法进行并发，其中WaitIterator返回时无序的，multi返回是有序的，传递给multi和WaitIterator对象时，
+        需要使用gen.convert_yielded将coroutine转换成Future对象再进行参数传递，或者直接传递一个包含协程的列表做参数。
+        如果你想从当前协程中主动弹出可以使用gen.sleep(0)，如果程序中存在CPU密集型操作，请使用
+        await IOLoop.current().run_in_executor(None, blocking_func, args)或者给阻塞函数添加@run_on_executor装饰器
 
     干掉阻塞代码(由于GIL关系，并不会提升太大性能，但是会减少阻塞)::
 
@@ -40,7 +39,7 @@ class AdminHandler(Base):
 
     # @override
     async def get(self):
-        await self.render("aTorTemplate.html", mirror_page="mirror_page")
+        await self.render("aTorTemplate.html", mirror_page="上游传参")
 
     # @override
     async def post(self):

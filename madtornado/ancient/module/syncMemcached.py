@@ -5,7 +5,7 @@ import memcache
 import json
 
 option = parser.options("cache")
-print("[syncMemcached] is imported.\n")
+print("[syncMemcached] is imported.")
 
 
 class Component:

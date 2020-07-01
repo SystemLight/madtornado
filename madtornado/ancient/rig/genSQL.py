@@ -157,6 +157,20 @@ def truncate_t(table):
     return ["set foreign_key_checks=0", "truncate table {}".format(table), "set foreign_key_checks=1"]
 
 
+def limit(sql, start, total):
+    """
+
+    生成限制返回数量的sql语句
+
+    :param sql: 现有sql语句
+    :param start: 开始位置
+    :param total: 总计条数
+    :return: 附件limit的sql语句
+
+    """
+    return sql + " limit {},{}".format(start, total)
+
+
 class InputResult:
     """
 

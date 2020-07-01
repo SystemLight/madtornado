@@ -2,7 +2,7 @@ def require(path):
     """
 
     有时你可能只是需要从文件中读取到json数据，这是require函数将根据
-    获取到的path，返回dict对象，相当方便
+    获取到的path，返回dict对象，相当方便，该函数同样类似于json.load
 
     :param path:
     :return: dict
@@ -143,3 +143,198 @@ def plunder(obj: dict, which: list) -> dict:
         if val:
             new_dict[key] = val
     return new_dict
+
+
+class UpdateList(list):
+    """
+
+    主要方法update()，该方法是对list类型拓展，
+    当update的数据对象存在时对其更新，注意请保证UpdateList
+    的子项是dict类型而不要使用值类型，值类型对于UpdateList毫无意义
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateList, self).__init__(*args, **kwargs)
+
+        # 对象key值，可以是函数，函数接收val, key返回布尔值代表满足条件
+        self.key = None
+        # 当key设置为函数时必须定义的回调，传入item对象返回该对象key值内容
+        self.on_fetch_key = None
+        # 当元素是更新时调用的更新方法，如果元素是插入时不调用，如果不定义该回调默认直接替换
+        self.on_update = None
+        # 当元素update方法触发的是添加时调用的回调函数，可以自定义append类型
+        self.on_append = None
+
+    def __getitem__(self, key):
+        if isinstance(self.key, str):
+            return self.find(lambda val: val[self.key] == key)
+        elif hasattr(self.key, "__call__"):
+            return self.find(lambda val: self.key(val, key))
+        else:
+            return super(UpdateList, self).__getitem__(key)
+
+    def __setitem__(self, key, value):
+        if isinstance(self.key, str):
+            key = self.find(lambda val: val[self.key] == key)[0]
+        elif hasattr(self.key, "__call__"):
+            key = self.find(lambda val: self.key(val, key))[0]
+        super(UpdateList, self).__setitem__(key, value)
+
+    def update(self, p_object):
+        """
+
+        类似于append方法，不同的是当内容存在时会对内容进行更新，更新逻辑遵从update_callback
+        而当内容不存在时与append方法一致进行末尾加入内容
+
+        :param p_object: 内容对象
+        :return: None
+
+        """
+        if not self.on_update:
+            raise TypeError("Function `on_update` is not defined")
+
+        old_val = None
+        if isinstance(self.key, str):
+            key = p_object.get(self.key) or -1
+            if key != -1:
+                key, old_val = self.find(lambda val: val[self.key] == key)
+        elif hasattr(self.key, "__call__"):
+            try:
+                key, old_val = self.find(lambda val: self.key(val, self.on_fetch_key(p_object)))
+            except TypeError:
+                raise TypeError("Function `on_fetch_key` is not defined")
+        else:
+            raise TypeError("`key` is not defined")
+
+        if key == -1:
+            if self.on_append:
+                self.append(self.on_append(p_object))
+            else:
+                self.append(p_object)
+        else:
+            super(UpdateList, self).__setitem__(key, self.on_update(old_val, p_object))
+
+    def find(self, callback):
+        """
+
+        返回满足回调函数的内容
+
+        :param callback: 回调函数，返回布尔类型用于判断是否满足要求
+        :return: (索引，值)
+
+        """
+        for index, item in enumerate(self):
+            if callback(item):
+                return index, item
+        return -1, None
+
+
+def rectangular_factor(x0, y0, x1, y1):
+    """
+
+    根据左上角和右下角坐标返回的Rectangular对象
+
+    :return: Rectangular
+
+    """
+    return Rectangular(x0, y0, x1 - x0, y1 - y0)
+
+
+class Rectangular:
+
+    def __init__(self, x, y, w, h):
+        """
+
+        矩形对象，不考虑矩阵变换矩形
+
+        :param x: 左上角x坐标点
+        :param y: 左上角y坐标点
+        :param w: 矩形宽度
+        :param h: 矩形高度
+
+        """
+        self.x0 = x
+        self.y0 = y
+        self.x1 = x + w
+        self.y1 = y + h
+        self.w = w
+        self.h = h
+
+    def __gt__(self, other):
+        if self.w > other.w and self.h > other.h:
+            return True
+        return False
+
+    def __lt__(self, other):
+        if self.w < other.w and self.h < other.h:
+            return True
+        return False
+
+    def collision(self, r2):
+        """
+
+        判断两个矩形是否产生碰撞关系
+
+        r1.x0 < r2.x1
+        r1.y0 < r2.y1
+        r1.x1 > r2.x0
+        r1.y1 > r2.y0
+
+        :param r2: Rectangular
+        :return: 布尔
+
+        """
+        if self.x0 < r2.x1 and self.y0 < r2.y1 and self.x1 > r2.x0 and self.y1 > r2.y0:
+            return True
+        return False
+
+    def contain(self, r2):
+        """
+
+        判断矩形中是否包含另外一个矩形r2，注意包含也是矩形碰撞所以collision方法会返回True
+
+        r1.x0 < r2.x0
+        r1.x1 > r2.x1
+        r1.y0 < r2.y0
+        r1.y1 > r2.y1
+
+        :param r2: Rectangular
+        :return: 布尔
+
+        """
+        if self.x0 < r2.x0 and self.x1 > r2.x1 and self.y0 < r2.y0 and self.y1 > r2.y1:
+            return True
+        return False
+
+
+def retry(freq=3, retry_callback=None):
+    """
+
+    装饰器，为函数添加此装饰器当函数抛出异常时会对函数重新调用，重新调用次数取决于freq指定的参数
+
+    :param freq: 重试次数
+    :param retry_callback: 重试时回调执行的函数
+    :return: 原函数返回值
+
+    """
+
+    def decorator(func):
+        def wrap(*args, **kwargs):
+            now_freq = 1
+            while True:
+                try:
+                    result = func(*args, **kwargs)
+                    break
+                except Exception as e:
+                    if now_freq > freq:
+                        raise e
+                    now_freq += 1
+                    if hasattr(retry_callback, "__call__"):
+                        retry_callback(now_freq)
+
+            return result
+
+        return wrap
+
+    return decorator

@@ -8,7 +8,7 @@ from typing import List, Tuple, Dict, TypeVar, Any, overload
 SQL_CONTENT = TypeVar("SQL_CONTENT", int, float, str, bool)
 
 option = parser.options("db")
-print("[syncSqlite] is imported.\n")
+print("[syncSqlite] is imported.")
 
 
 def dict_factory(cursor, row):
