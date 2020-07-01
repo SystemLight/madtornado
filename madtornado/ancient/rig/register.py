@@ -31,7 +31,6 @@ class Router:
 
     :param version: restful风格版本号
     :param prefix: 统一路由前缀
-    :param version: 接口版本号
 
     """
 
@@ -47,6 +46,7 @@ class Router:
 
         :param content: 转换的类名，如果带有Handler结尾将自动去除
         :return: 转换后的内容
+
         """
         if content.endswith("Handler"):
             content = content[:-7]

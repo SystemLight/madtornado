@@ -2,6 +2,10 @@ def hello_method(self):
     return 'hello uiMethod'
 
 
+def hello_func(self, content):
+    return "<div>{}</h1>".format(content)
+
+
 def static_url(self, path):
     """
 

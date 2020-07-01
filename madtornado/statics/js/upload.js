@@ -5,36 +5,35 @@
 
     TODO: 单块数据失败重传，并发数量限制，worker技术进行文件hash运算
 
-    最简单的使用方法
-        <input type="file" id="file">
-        <button onclick="fd()">按钮</button>
-        <script src="./spark-md5.min.js"></script>
-        <script src="./upload.js"></script>
-        <script>
-            let fileEl = document.getElementById("file");
+    使用举例：
+    <input type="file" id="file">
+    <button onclick="fd()">按钮</button>
+    <script src="./spark-md5.min.js"></script>
+    <script src="./upload.js"></script>
+    <script>
+        let fileEl = document.getElementById("file");
 
-            function fd() {
-                upload2madtornado(fileEl, "png", "http://127.0.0.1:8095").then(res => {
-                    console.log(res)
-                }).catch(err => {
-                    console.log("err", err);
-                });
-            }
-        </script>
+        function fd() {
+            upload2madtornado(fileEl, "png", "http://127.0.0.1:8095").then(res => {
+                console.log(res)
+            }).catch(err => {
+                console.log("err", err);
+            });
+        }
+    </script>
  */
 
 
-// 用于和madtornado后端框架便利联动的函数
+// 用于和madtornado后端框架联动的函数
+// madtornado后端默认注释该处理路由，请到ancient/view/upload将路由注释取消掉
 function upload2madtornado(fileEl, suffix, address) {
-    // madtornado后端默认注释该处理路由，请到ancient/view/upload将路由注释取消掉
-
-    let uploadAddress = `${address}/file/upload`;
-    let mergeAddress = `${address}/file/merge`;
-
     // errCode
     // 0:本地没有文件上传
     // 1:上传超时
     // 2:上传合并失败
+
+    let uploadAddress = `${address}/file/upload`;
+    let mergeAddress = `${address}/file/merge`;
 
     let file = fileEl.files[0];
     if (file) {
@@ -70,6 +69,7 @@ function upload2madtornado(fileEl, suffix, address) {
     }
 }
 
+// 拥有超时能力的fetch api
 function fetchTime(address, init, overTime) {
     // 可以设置超时时间
     return new Promise(function (resolve, reject) {
@@ -81,6 +81,7 @@ function fetchTime(address, init, overTime) {
         });
     });
 }
+
 
 // 请求文件上传
 function fetchFile(address, md5, block, data, overTime) {
@@ -121,7 +122,7 @@ FileForeach.prototype.forEach = function (callback) {
 };
 
 FileForeach.prototype.isOutRange = function () {
-    return this.currentChunk > this.chunks;
+    return this.currentChunk >= this.chunks;
 };
 
 FileForeach.prototype.nextLoad = function () {

@@ -6,7 +6,7 @@ import time
 from typing import Optional, Dict
 
 option = parser.options("token")
-print("[syncJwt] is imported.\n")
+print("[syncJwt] is imported.")
 
 
 class Component:
@@ -15,9 +15,6 @@ class Component:
         self.over_time = int(option["over_time"])
         self.secret = option["secret"]
         self.algorithm = option["algorithm"]
-
-    def __enter__(self):
-        return self
 
     def decode(self, payload: str or bytes) -> Dict:
         """
