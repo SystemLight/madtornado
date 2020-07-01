@@ -2,7 +2,7 @@ def require(path):
     """
 
     有时你可能只是需要从文件中读取到json数据，这是require函数将根据
-    获取到的path，返回dict对象，相当方便
+    获取到的path，返回dict对象，相当方便，该函数同样类似于json.load
 
     :param path:
     :return: dict
@@ -306,3 +306,35 @@ class Rectangular:
         if self.x0 < r2.x0 and self.x1 > r2.x1 and self.y0 < r2.y0 and self.y1 > r2.y1:
             return True
         return False
+
+
+def retry(freq=3, retry_callback=None):
+    """
+
+    装饰器，为函数添加此装饰器当函数抛出异常时会对函数重新调用，重新调用次数取决于freq指定的参数
+
+    :param freq: 重试次数
+    :param retry_callback: 重试时回调执行的函数
+    :return: 原函数返回值
+
+    """
+
+    def decorator(func):
+        def wrap(*args, **kwargs):
+            now_freq = 1
+            while True:
+                try:
+                    result = func(*args, **kwargs)
+                    break
+                except Exception as e:
+                    if now_freq > freq:
+                        raise e
+                    now_freq += 1
+                    if hasattr(retry_callback, "__call__"):
+                        retry_callback(now_freq)
+
+            return result
+
+        return wrap
+
+    return decorator

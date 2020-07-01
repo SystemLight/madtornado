@@ -49,6 +49,13 @@ class Component:
         self.is_return_dict = False
         self.switch = False
 
+    async def __aenter__(self):
+        await self.on()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self.off()
+
     def set_return_dict(self, is_return_dict: bool = True) -> None:
         """
 
@@ -70,8 +77,12 @@ class Component:
 
             db=Component()
             db.on()
-            db.select_tw("table")
+            result = await db.select_tw("table")
             db.off()
+
+            # 与上述使用方法一致
+            async with Component() as com:
+                result = await com.select_tcw("table")
 
         快捷使用方法::
 

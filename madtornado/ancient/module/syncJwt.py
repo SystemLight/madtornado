@@ -16,9 +16,6 @@ class Component:
         self.secret = option["secret"]
         self.algorithm = option["algorithm"]
 
-    def __enter__(self):
-        return self
-
     def decode(self, payload: str or bytes) -> Dict:
         """
 
