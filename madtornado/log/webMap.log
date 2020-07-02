@@ -1,6 +1,6 @@
 /admin
 /index
 /home
-/init
+/pong
 /s/(.*)
 /(.*)

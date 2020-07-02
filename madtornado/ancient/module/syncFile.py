@@ -7,7 +7,7 @@ import hashlib
 from typing import Iterable, Tuple, Optional, Union
 
 option = parser.options("file")
-print("[syncFile] is imported.\n")
+print("[syncFile] is imported.")
 
 """
 该模块和upload.py视图有关联，可以增加方法，但是不要修改或删除该组件内容

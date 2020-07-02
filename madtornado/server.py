@@ -43,7 +43,7 @@ def default_routers():
     :return: List
 
     """
-    init_route = (r"/init", ancient.dealHandler.InitHandler)
+    pong_route = (r"/pong", ancient.dealHandler.PongHandler)
 
     static_routes = []
     default_filename = opt_static["default_filename"]
@@ -82,7 +82,7 @@ def default_routers():
                 "proxy_option": {"instead": url.rstrip("/.*"), "address": address, "host": host}
             }))
 
-    return [init_route, *proxy_routes, *static_routes, *ancient.end_register_route, static_route]
+    return [pong_route, *proxy_routes, *static_routes, *ancient.end_register_route, static_route]
 
 
 def routers():

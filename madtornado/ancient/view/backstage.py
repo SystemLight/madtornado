@@ -1,6 +1,8 @@
 from ..handlers.inheritHandler import Base
 from ..rig import register
 
+rf = register.rf
+
 
 @register.route()
 class AdminHandler(Base):
@@ -52,3 +54,43 @@ class AdminHandler(Base):
     # @override
     async def delete(self):
         self.throw(405)
+
+
+# @register.route(url=rf.e("zoos").url)
+class ZoosHandler(Base):
+    """
+
+    RESTful风格动物园模型距离，动物园实体
+
+    # 以对象的方式描写RESTful风格路由，相当于
+    # /zoos                         # 所有的动物园
+    # /zoos/{动物园ID}               # 指定的动物园
+
+    """
+
+    # @override
+    async def get(self, zoos):
+        if zoos:
+            return self.write("动物园 {}".format(zoos))
+
+        self.write("所有动物园")
+
+
+# @register.route(url=rf.e("zoos").e("animals").url)
+class AnimalsHandler(Base):
+    """
+
+    RESTful风格动物园模型距离，动物实体
+
+    # 以对象的方式描写RESTful风格路由，相当于
+    # /zoos/{动物园ID}/animals               # 动物园所有动物
+    # /zoos/{动物园ID}/animals/{动物ID}       # 动物园指定ID的动物
+
+    """
+
+    # @override
+    async def get(self, zoos, animals):
+        if animals:
+            return self.write("动物园 {} 的动物 {}".format(zoos, animals))
+
+        self.write("动物园 {} 的所有动物".format(zoos))

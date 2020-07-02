@@ -2,6 +2,72 @@ register_route = []
 end_register_route = []
 
 
+class RESTful:
+    """
+
+    RESTful风格路由生成器，用于快速生成restful风格路由，
+    生成的路由可以被注册，不建议过长的路由匹配，尽量使用querystring
+    进行参数传递
+
+    示例一::
+
+        rf = register.rf
+
+        # 以对象的方式描写RESTful风格路由，相当于
+        # /zoos/{动物园ID}/animals               # 动物园所有动物
+        # /zoos/{动物园ID}/animals/{动物ID}       # 动物园指定ID的动物
+        @register.route(url=rf.e("zoos").e("animals").url)
+
+    示例二::
+
+        # 与上述注册方式效果一致
+        @register.route(url=RESTful(["zoos", "animals"]).u())
+        @register.route(url=RESTful([("zoos","(正则的类型，斜杠)w"), "animals"]).url)
+
+    """
+
+    def __init__(self, init_entity=None):
+        self.entity = []
+        self.eof = r"(?:/({}*))?"
+        self.chain = r"/({}+)"
+
+        if init_entity:
+            for ie in init_entity:
+                if isinstance(ie, str):
+                    self.e(ie)
+                elif isinstance(ie, tuple):
+                    self.e(*ie)
+
+    def e(self, name, shape=r"[^\\/]"):
+        self.entity.append({
+            "name": "/" + name,
+            "shape": shape,
+        })
+        return self
+
+    def clear(self):
+        self.entity = []
+        return self
+
+    @property
+    def url(self):
+        return self.u()
+
+    def u(self, need_eof=True):
+        result = ""
+        size = len(self.entity) - 1
+        for idx, e in enumerate(self.entity):
+            result += e["name"]
+            if idx == size:
+                if need_eof:
+                    result += self.eof.format(e["shape"])
+                result += r"$"
+            else:
+                result += self.chain.format(e["shape"])
+        self.clear()
+        return result
+
+
 class Router:
     """
 
@@ -99,3 +165,4 @@ class Router:
 
 
 route = Router().route
+rf = RESTful()

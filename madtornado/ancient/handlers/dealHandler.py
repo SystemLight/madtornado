@@ -230,7 +230,7 @@ class ProxyHandler(Base):
                 self.throw(e.code)
 
 
-class InitHandler(Base):
+class PongHandler(Base):
     """
 
     有时可能需要测试服务器的服务是否启动，请访问/init，来进行确定
