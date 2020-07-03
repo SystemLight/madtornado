@@ -1,6 +1,8 @@
 from ..handlers.inheritHandler import CustomErrorBaseHandler
 from ..rig import register
 
+rf = register.rf
+
 
 @register.route(urls=["index", "home"])
 class IndexHandler(CustomErrorBaseHandler):

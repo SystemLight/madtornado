@@ -24,7 +24,21 @@ class RESTful:
         @register.route(url=RESTful(["zoos", "animals"]).u())
         @register.route(url=RESTful([("zoos","(正则的类型，斜杠)w"), "animals"]).url)
 
+    示例三::
+
+        # 压缩实体去掉前缀路径，使用s方法注册的实体不包含前缀，即/{动物园ID}
+        @register.route(url=rf.s("zoos").url)
+
+        # 控制实例ID标识项是否可以省略，默认是可省略的标识
+        @register.route(url=rf.e("zoos").u(rf.LOOSE))
+
+        # 严格模式下必须包含指定的动物园ID，即无法匹配 /zoos
+        @register.route(url=rf.e("zoos").u(rf.STRICT))
+
     """
+    LOOSE = 0
+    STRICT = 1
+    IGNORE = 2
 
     def __init__(self, init_entity=None):
         self.entity = []
@@ -45,25 +59,36 @@ class RESTful:
         })
         return self
 
+    def s(self, name, shape=r"[^\\/]"):
+        self.entity.append({
+            "name": "",
+            "shape": shape,
+        })
+        return self
+
     def clear(self):
         self.entity = []
         return self
 
     @property
     def url(self):
-        return self.u()
+        return self.u(int(len(self.entity) == 1 and not self.entity[0]["name"]))
 
-    def u(self, need_eof=True):
+    def u(self, need_eof=0):
         result = ""
         size = len(self.entity) - 1
         for idx, e in enumerate(self.entity):
             result += e["name"]
             if idx == size:
-                if need_eof:
+                if need_eof == 0:
                     result += self.eof.format(e["shape"])
-                result += r"$"
+                elif need_eof == 1:
+                    result += self.chain.format(e["shape"])
+                else:
+                    break
             else:
                 result += self.chain.format(e["shape"])
+        result += r"$"
         self.clear()
         return result
 
