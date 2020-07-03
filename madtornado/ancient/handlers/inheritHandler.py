@@ -11,6 +11,20 @@ from ..handlers.baseHandler import BaseHandler
 """
 
 
+class CROSBaseHandler(BaseHandler):
+    """
+
+    继承该类，让路由拥有跨域访问的能力
+
+    """
+
+    def prepare(self):
+        self.set_access_headers()
+
+    def options(self):
+        self.set_access_headers()
+
+
 class CustomErrorBaseHandler(BaseHandler):
     """
 

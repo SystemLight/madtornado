@@ -1,11 +1,11 @@
-from ..handlers.inheritHandler import CustomErrorBaseHandler
+from ..handlers.inheritHandler import Base
 from ..rig import register
 
 rf = register.rf
 
 
 @register.route(urls=["index", "home"])
-class IndexHandler(CustomErrorBaseHandler):
+class IndexHandler(Base):
     """
 
     建议将前台页面写入该模块中，该模块继承CustomErrorHandler，
