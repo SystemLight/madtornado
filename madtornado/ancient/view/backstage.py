@@ -39,19 +39,15 @@ class AdminHandler(Base):
 
     """
 
-    # @override
     async def get(self):
         await self.render("aTorTemplate.html", mirror_page="上游传参")
 
-    # @override
     async def post(self):
         self.throw(405)
 
-    # @override
     async def put(self):
         self.throw(405)
 
-    # @override
     async def delete(self):
         self.throw(405)
 
@@ -68,7 +64,6 @@ class ZoosHandler(Base):
 
     """
 
-    # @override
     async def get(self, zoos):
         if zoos:
             return self.write("动物园 {}".format(zoos))
@@ -88,7 +83,6 @@ class AnimalsHandler(Base):
 
     """
 
-    # @override
     async def get(self, zoos, animals):
         if animals:
             return self.write("动物园 {} 的动物 {}".format(zoos, animals))

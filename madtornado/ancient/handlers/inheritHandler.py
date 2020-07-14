@@ -1,5 +1,7 @@
 from ..handlers.baseHandler import BaseHandler
 
+from abc import ABC, abstractmethod
+
 """
 
 为什么会有该模块能，该模块为了方便更改view中模块继承的基类
@@ -9,6 +11,25 @@ from ..handlers.baseHandler import BaseHandler
 父类
 
 """
+
+
+class AbstractBaseHandler(BaseHandler, ABC):
+
+    @abstractmethod
+    async def get(self, *params):
+        pass
+
+    @abstractmethod
+    async def post(self, *params):
+        pass
+
+    @abstractmethod
+    async def put(self, *params):
+        pass
+
+    @abstractmethod
+    async def delete(self, *params):
+        pass
 
 
 class CROSBaseHandler(BaseHandler):
@@ -21,7 +42,7 @@ class CROSBaseHandler(BaseHandler):
     def prepare(self):
         self.set_access_headers()
 
-    def options(self):
+    def options(self, *args):
         self.set_access_headers()
 
 
@@ -56,7 +77,7 @@ class CustomErrorBaseHandler(BaseHandler):
         super(CustomErrorBaseHandler, self).write_resp(status_code, **kwargs)
 
 
-class InterceptorBaseHandler(BaseHandler):
+class InterceptorBaseHandler(BaseHandler, ABC):
     """
 
     该类可以作为一个验证拦截器，你可以继承该类之后你需要重写interceptor
@@ -73,6 +94,7 @@ class InterceptorBaseHandler(BaseHandler):
 
     """
 
+    @abstractmethod
     async def interceptor(self, *args):
         """
 
@@ -83,40 +105,44 @@ class InterceptorBaseHandler(BaseHandler):
         """
         ...
 
-    async def get(self, *args):
-        inter = await self.interceptor(*args)
+    async def get(self, *params):
+        inter = await self.interceptor(*params)
         if not inter:
             return
-        await self.i_get(*args)
+        await self.i_get(*params)
 
-    async def i_get(self, *args):
+    @abstractmethod
+    async def i_get(self, *params):
         ...
 
-    async def post(self, *args):
-        inter = await self.interceptor(*args)
+    async def post(self, *params):
+        inter = await self.interceptor(*params)
         if not inter:
             return
-        await self.i_post(*args)
+        await self.i_post(*params)
 
-    async def i_post(self, *args):
+    @abstractmethod
+    async def i_post(self, *params):
         ...
 
-    async def put(self, *args):
-        inter = await self.interceptor(*args)
+    async def put(self, *params):
+        inter = await self.interceptor(*params)
         if not inter:
             return
-        await self.i_put(*args)
+        await self.i_put(*params)
 
-    async def i_put(self, *args):
+    @abstractmethod
+    async def i_put(self, *params):
         ...
 
-    async def delete(self, *args):
-        inter = await self.interceptor(*args)
+    async def delete(self, *params):
+        inter = await self.interceptor(*params)
         if not inter:
             return
-        await self.i_delete(*args)
+        await self.i_delete(*params)
 
-    async def i_delete(self, *args):
+    @abstractmethod
+    async def i_delete(self, *params):
         ...
 
 

@@ -16,18 +16,14 @@ class IndexHandler(Base):
 
     """
 
-    # @override
     async def get(self):
         self.write("<h1 style='text-align:center'>前台页面</h1>")
 
-    # @override
     async def post(self):
         self.throw(405)
 
-    # @override
     async def put(self):
         self.throw(405)
 
-    # @override
     async def delete(self):
         self.throw(405)

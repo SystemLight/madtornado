@@ -2,6 +2,19 @@ register_route = []
 end_register_route = []
 
 
+def _url(match, union):
+    """
+
+    当union为true时，替换掉字符中+和*符号
+
+    :param match: 匹配字符串
+    :param union:
+    :return: 清洗后的字符串
+
+    """
+    return match.replace("*", "").replace("+", "") if union else match
+
+
 class RESTful:
     """
 
@@ -35,6 +48,14 @@ class RESTful:
         # 严格模式下必须包含指定的动物园ID，即无法匹配 /zoos
         @register.route(url=rf.e("zoos").u(rf.STRICT))
 
+    示例四::
+
+        有时你可能需要匹配的参数是可选的，你可以这样注册
+        url=rf.e("fruit", **rf.union("apple", "banana", "orange")).url
+
+        上面的注册只会对三条路径进行匹配，使用union方法创造可选匹配串，通过**的方式传递给实体方法
+        /fruit/apple，/fruit/banana，/fruit/orange
+
     """
     LOOSE = 0
     STRICT = 1
@@ -52,42 +73,98 @@ class RESTful:
                 elif isinstance(ie, tuple):
                     self.e(*ie)
 
-    def e(self, name, shape=r"[^\\/]"):
+    @staticmethod
+    def union(*args):
+        """
+
+        返回一个用于shape参数的匹配字符串，代表该内容类型为可选内容，可选范围为传入的内容
+
+        :param args: 可选项的列表
+        :return: 用于shape参数的匹配字符串
+
+        """
+        return {"shape": "|".join(args), "union": True}
+
+    def e(self, name, shape=r"[^\\/]", union=False):
+        """
+
+        URL中增加一个实体，实体是有前缀的，前缀名等于name
+
+        :param name: 实体前缀名称
+        :param shape: 匹配类型
+        :param union: 类型是否为可选匹配
+        :return: RESTful实例对象
+
+        """
         self.entity.append({
             "name": "/" + name,
             "shape": shape,
+            "union": union,
         })
         return self
 
-    def s(self, name, shape=r"[^\\/]"):
+    def s(self, name, shape=r"[^\\/]", union=False):
+        """
+
+        URL中增加一个简易实体，实体没有前缀
+
+        :param name: 实体前缀名称，仅用于标记无实际意义
+        :param shape: 匹配类型
+        :param union: 类型是否为可选匹配
+        :return: RESTful实例对象
+
+        """
         self.entity.append({
             "name": "",
             "shape": shape,
+            "union": union,
         })
         return self
 
     def clear(self):
+        """
+
+        清空注册进来的内容
+
+        :return: RESTful实例对象
+
+        """
         self.entity = []
         return self
 
     @property
     def url(self):
+        """
+
+        属性方法，获取url
+
+        :return: 生成的URL匹配串
+
+        """
         return self.u(int(len(self.entity) == 1 and not self.entity[0]["name"]))
 
     def u(self, need_eof=0):
+        """
+
+        获取url
+
+        :param need_eof: 结尾字符的种类
+        :return: 生成的URL匹配串
+
+        """
         result = ""
         size = len(self.entity) - 1
         for idx, e in enumerate(self.entity):
             result += e["name"]
             if idx == size:
                 if need_eof == 0:
-                    result += self.eof.format(e["shape"])
+                    result += _url(self.eof, e["union"]).format(e["shape"])
                 elif need_eof == 1:
-                    result += self.chain.format(e["shape"])
+                    result += _url(self.chain, e["union"]).format(e["shape"])
                 else:
                     break
             else:
-                result += self.chain.format(e["shape"])
+                result += _url(self.chain, e["union"]).format(e["shape"])
         result += r"$"
         self.clear()
         return result
