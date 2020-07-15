@@ -145,12 +145,42 @@ def plunder(obj: dict, which: list) -> dict:
     return new_dict
 
 
+def find(iterable, func):
+    """
+
+    查找可迭代对象的指定项，匹配第一个子项并返回，无匹配项时返回(-1,None)
+
+    :param func: 匹配函数
+    :param iterable: 可迭代对象
+    :return: 索引，子对象
+
+    """
+    for i, v in enumerate(iterable):
+        if func(v):
+            return i, v
+    return -1, None
+
+
 class UpdateList(list):
     """
 
     主要方法update()，该方法是对list类型拓展，
     当update的数据对象存在时对其更新，注意请保证UpdateList
     的子项是dict类型而不要使用值类型，值类型对于UpdateList毫无意义
+
+    on_update hook函数，接收old_val(旧数据), p_object(新数据)，需要返回更新数据
+    on_append hook函数，接收p_object(添加数据)，需要返回添加数据
+    on_fetch_key hook函数，当key属性定义为函数时需要同时定义如何捕获key值
+
+    key 支持字符串，字符串指定子元素中的更新参考值
+        支持函数，接收val(当前数据)，key(参考key值)该key值由on_fetch_key返回，函数返回bool值True为更新，False为添加
+
+    on_fetch_key作用::
+
+        复杂场景下我们可能需要up[("home2", True)]这样来找到响应的item，这样显示传递key值没有什么问题，key函数可以获取到
+        相应的key数据以供我们处理，但是当我们调用update时，update需要判断该内容是更新还是添加，这时我们传入的内容是数据，显然
+        update无法知晓如何获取我们想要的类型key值，如("home2", True)，所以我们要定义on_fetch_key来告知update如何捕获我们
+        想要的类型的key值，on_fetch_key只有当key属性定义为函数时才有意义。
 
     """
 
@@ -192,7 +222,7 @@ class UpdateList(list):
 
         """
         if not self.on_update:
-            raise TypeError("Function `on_update` is not defined")
+            self.on_update = lambda o, p: p
 
         old_val = None
         if isinstance(self.key, str):
@@ -205,7 +235,7 @@ class UpdateList(list):
             except TypeError:
                 raise TypeError("Function `on_fetch_key` is not defined")
         else:
-            raise TypeError("`key` is not defined")
+            raise TypeError("`key` is TypeError")
 
         if key == -1:
             if self.on_append:
@@ -338,3 +368,31 @@ def retry(freq=3, retry_callback=None):
         return wrap
 
     return decorator
+
+
+def read(path):
+    """
+
+    快捷读取文件函数
+
+    :param path: 文件路径
+    :return: 读取的文件内容
+
+    """
+    with open(path, "r", encoding="utf-8") as fp:
+        result = fp.read()
+    return result
+
+
+def write(path, data):
+    """
+
+    快捷写入文件函数
+
+    :param path: 文件路径
+    :param data: 写入数据
+    :return: None
+
+    """
+    with open(path, "w", encoding="utf-8") as fp:
+        fp.write(data)
