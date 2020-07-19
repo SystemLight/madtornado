@@ -4,7 +4,7 @@ from tornado.httpclient import AsyncHTTPClient, HTTPClientError
 from tornado.web import StaticFileHandler
 
 """
-改模块下包含一些基类，可以通过配置文件控制这些基类的反应行为
+该模块下包含一些基类，可以通过配置文件控制这些基类的反应行为
 """
 
 
@@ -15,10 +15,11 @@ class StaticHandler(StaticFileHandler, Base):
 
     """
 
-    def initialize(self, path: str, default_filename: str = None, prefix: str = None) -> None:
+    def initialize(self, path: str, default_filename: str = None, prefix: str = None, spa_page: str = None) -> None:
         super(StaticHandler, self).initialize(path, default_filename)
         self.prefix = prefix
         self.absolute_path = path  # 缺少这个属性web.py会报错，问题不大
+        self.spa_page = spa_page
 
     # @override
     async def get(self, path, include_body=True):
@@ -26,20 +27,19 @@ class StaticHandler(StaticFileHandler, Base):
 
         默认等于StaticFileHandler.get()行为，通过写该方法，对文件进行控制，可以直接在这里编写代码
 
-        结合单页面应用使用，请改写成以下内容，可以替换index.html为自己的单页面::
-
+        """
+        if self.spa_page:
             if not self.prefix:
                 try:
                     await super(StaticHandler, self).get(path, include_body)
                     return
                 except Exception as e:
-                    await super(StaticHandler, self).get("index.html", include_body)
+                    await super(StaticHandler, self).get(self.spa_page, include_body)
                     return
             else:
                 await super(StaticHandler, self).get(path, include_body)
-
-        """
-        await super(StaticHandler, self).get(path, include_body)
+        else:
+            await super(StaticHandler, self).get(path, include_body)
 
 
 class ProxyHandler(Base):
@@ -233,7 +233,7 @@ class ProxyHandler(Base):
 class PongHandler(Base):
     """
 
-    有时可能需要测试服务器的服务是否启动，请访问/init，来进行确定
+    有时可能需要测试服务器的服务是否启动，请访问/pong，来进行确定
 
     """
 
@@ -241,7 +241,7 @@ class PongHandler(Base):
     async def get(self):
         """
 
-        有时可能需要测试服务器的服务是否启动，请访问/init，来进行确定
+        有时可能需要测试服务器的服务是否启动，请访问/pong，来进行确定
 
         """
         self.throw(200, log_message="connected")
@@ -250,7 +250,7 @@ class PongHandler(Base):
     async def post(self):
         """
 
-        有时可能需要测试服务器的服务是否启动，请访问/init，来进行确定
+        有时可能需要测试服务器的服务是否启动，请访问/pong，来进行确定
 
         """
         await self.get()

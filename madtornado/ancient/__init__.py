@@ -28,6 +28,9 @@ def import_view():
     for i in os.listdir("ancient/view"):
         if i.endswith(".py") and i not in exclude_file:
             __import__("ancient.view.{}".format(i[:-3]))
+    for i in os.listdir("ancient/wood"):
+        if i.endswith(".py") and i not in exclude_file:
+            __import__("ancient.wood.{}".format(i[:-3]))
 
 
 import_view()

@@ -159,7 +159,19 @@ class Component:
             self.read_fp = None
         return
 
-    def is_exist(self, file_name: str) -> bool:
+    @staticmethod
+    def is_exist(path: str) -> bool:
+        """
+
+        判断文件是否存在
+
+        :param path: 路径
+        :return: 布尔值，是否存在
+
+        """
+        return os.path.exists(path)
+
+    def is_safe_exist(self, file_name: str) -> bool:
         """
 
         判断文件是否存在，需要[捕获异常]处理

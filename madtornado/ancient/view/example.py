@@ -4,13 +4,34 @@ from ..rig import register
 rf = register.rf
 
 
-@register.route()
+@register.route(urls=["index", "home"])
+class IndexHandler(Base):
+    """
+
+    CustomErrorHandler是一个举例说明，演示了如何正确的创建自己的自定义错误处理
+    公共类
+
+    """
+
+    async def get(self):
+        self.write("<h1 style='text-align:center'>前台页面</h1>")
+
+    async def post(self):
+        self.throw(405)
+
+    async def put(self):
+        self.throw(405)
+
+    async def delete(self):
+        self.throw(405)
+
+
+# @register.route()
 class AdminHandler(Base):
     """
 
-    建议将后台管理写入该模块中，使用render注意static_url函数无法使用被madtornado禁用了，
-    由于tornado静态的处理太烂了，所以内部重新实现了静态处理，如果实在需求static_url可以在
-    custom/uiMethod.py中自行实现
+    用render注意static_url函数无法使用被madtornado禁用了，由于tornado静态的处理不是很优美，
+    所以内部重新实现了静态处理，如果实在需求static_url可以在custom/uiMethod.py中自行实现
 
     碎碎念::
 

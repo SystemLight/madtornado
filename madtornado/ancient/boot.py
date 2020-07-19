@@ -23,6 +23,7 @@ def boot():
     :return: None
 
     """
+
     print("Boot hook is started")
 
     # 自启动浏览器，需要该功能请取消注释

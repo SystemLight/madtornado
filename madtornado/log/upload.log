@@ -1,3 +1,4 @@
 1. 增添RESTful实体类，用于更加人性化的注册RESTful风格路由
 2. 添加CROSBaseHandler路由基类，用于让路由拥有跨域访问能力
-3.
+3. 添加wood预设逻辑模块，同时增加freedom预设接口
+4. 配置文件中增加spa_page，用于支持如react等单页面应用

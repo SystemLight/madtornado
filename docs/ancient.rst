@@ -11,4 +11,5 @@
    ancient/module
    ancient/rig
    ancient/view
+   ancient/wood
    ancient/boot

@@ -1,18 +1,10 @@
 ``ancient.view`` --- 视图模块
 ======================================
 
-backstage
+example
 -----------------------------
 
-.. automodule:: ancient.view.backstage
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-reception
------------------------------
-
-.. automodule:: ancient.view.reception
+.. automodule:: ancient.view.example
    :members:
    :undoc-members:
    :show-inheritance:

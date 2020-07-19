@@ -48,6 +48,7 @@ def default_routers():
     static_routes = []
     default_filename = opt_static["default_filename"]
     default_static_path = opt_static["default_static_path"]
+    default_spa_page = opt_static["spa_page"]
     for p in json.loads(opt_static["url_prefix"]):
         path = None
         df = None
@@ -67,6 +68,7 @@ def default_routers():
     static_route = (r"/(.*)", ancient.dealHandler.StaticHandler, {
         "path": default_static_path,
         "default_filename": default_filename,
+        "spa_page": default_spa_page,
     })
 
     proxy_prefix = opt_proxy["proxy_prefix"]

@@ -33,6 +33,14 @@ register
    :undoc-members:
    :show-inheritance:
 
+template
+---------------------------
+
+.. automodule:: ancient.rig.template
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 utils
 ---------------------------
 

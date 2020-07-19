@@ -5,12 +5,12 @@ from ..rig import check
 
 from tornado import gen
 
-file_router = register.Router(prefix="/file")
-
 """
 如果需要分块上传方案，请将三个类的路由注释取消掉，让路由可以正常注册
 前端代码可以配合static/js下面的upload.js一起使用
 """
+
+file_router = register.Router(prefix="/file")
 
 
 # @file_router.route(url="/exist")

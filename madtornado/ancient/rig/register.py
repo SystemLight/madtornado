@@ -222,7 +222,7 @@ class Router:
             content = content.replace(i, "_" + i.lower())
         return content.strip("_")
 
-    def route(self, prefix: str = "", url: str = None, urls: list = None, end=False):
+    def route(self, url: str = None, prefix: str = "", urls: list = None, end=False):
         """
 
         ``装饰器`` 添加该装饰器的请求实例，路由路径会被自动注册到路由表中
@@ -236,8 +236,8 @@ class Router:
         如果你在配置文件中配置了url_prefix = [] 这是一个列表，会生成一组带前缀的静态文件路由匹配项
         而我们的end=True的路由会放到这些带前缀的静态文件管理路由后面
 
-        :param prefix: 如果提供该内容将在路由中添加一个前缀，这个前缀是在统一路由前缀后面的
         :param url: 路由路径，不填写默认会根据类名生成路径
+        :param prefix: 如果提供该内容将在路由中添加一个前缀，这个前缀是在统一路由前缀后面的
         :param urls: 如果设置该参数，传入一个列表对象，url将不起效果，同时为该类增加多个可匹配的路由
         :param end: 声明该路由是否注册到默认路由后面，系统默认路由参考server.py中的default_route
         :return: None
