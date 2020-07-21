@@ -1,7 +1,7 @@
 from .inheritHandler import Base
 
 from tornado.httpclient import AsyncHTTPClient, HTTPClientError
-from tornado.web import StaticFileHandler
+from tornado.web import StaticFileHandler, HTTPError
 
 """
 该模块下包含一些基类，可以通过配置文件控制这些基类的反应行为
@@ -15,9 +15,8 @@ class StaticHandler(StaticFileHandler, Base):
 
     """
 
-    def initialize(self, path: str, default_filename: str = None, prefix: str = None, spa_page: str = None) -> None:
+    def initialize(self, path: str, default_filename: str = None, spa_page: str = None) -> None:
         super(StaticHandler, self).initialize(path, default_filename)
-        self.prefix = prefix
         self.absolute_path = path  # 缺少这个属性web.py会报错，问题不大
         self.spa_page = spa_page
 
@@ -29,15 +28,12 @@ class StaticHandler(StaticFileHandler, Base):
 
         """
         if self.spa_page:
-            if not self.prefix:
-                try:
-                    await super(StaticHandler, self).get(path, include_body)
-                    return
-                except Exception as e:
-                    await super(StaticHandler, self).get(self.spa_page, include_body)
-                    return
-            else:
+            try:
                 await super(StaticHandler, self).get(path, include_body)
+                return
+            except HTTPError:
+                await super(StaticHandler, self).get(self.spa_page, include_body)
+                return
         else:
             await super(StaticHandler, self).get(path, include_body)
 

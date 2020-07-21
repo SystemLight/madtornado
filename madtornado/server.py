@@ -52,6 +52,7 @@ def default_routers():
     for p in json.loads(opt_static["url_prefix"]):
         path = None
         df = None
+        spa = None
         if type(p) == str:
             prefix = p
         else:
@@ -60,10 +61,12 @@ def default_routers():
                 path = p[1]
             if len(p) > 2:
                 df = p[2]
+            if len(p) > 3:
+                spa = p[3]
         static_routes.append((prefix + "/(.*)", ancient.dealHandler.StaticHandler, {
             "path": path or default_static_path,
             "default_filename": df or default_filename,
-            "prefix": prefix,
+            "spa_page": spa,
         }))
     static_route = (r"/(.*)", ancient.dealHandler.StaticHandler, {
         "path": default_static_path,
