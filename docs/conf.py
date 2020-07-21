@@ -32,6 +32,8 @@ sys.path.insert(0, os.path.abspath('../madtornado/'))
 
 if not os.path.isdir("./ancient/view"):
     shutil.copytree("../madtornado/ancient/view", "./ancient/view")
+if not os.path.isdir("./ancient/wood"):
+    shutil.copytree("../madtornado/ancient/wood", "./ancient/wood")
 shutil.copyfile("../madtornado/config/tornado.cfg", "./config/tornado.cfg")
 
 t_conf = configparser.ConfigParser()
