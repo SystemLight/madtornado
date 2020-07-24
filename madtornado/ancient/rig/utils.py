@@ -1,3 +1,6 @@
+from typing import List, Optional
+
+
 def require(path):
     """
 
@@ -396,3 +399,144 @@ def write(path, data):
     """
     with open(path, "w", encoding="utf-8") as fp:
         fp.write(data)
+
+
+class TreeOperate:
+    """
+
+    TreeOperate允许你操作一颗树型结构数据，支持数据导入和导出，数据必须含有key唯一标识，
+    子元素必须存储在children键值下
+
+    示例内容::
+
+        _data = {
+            "key": "1",
+            "title": "root",
+            "children": [
+                {"key": "2", "title": "2", "children": [
+                    {"key": "4", "title": "4"},
+                    {"key": "5", "title": "5"}
+                ]},
+                {"key": "3", "title": "3", "children": [
+                    {"key": "6", "title": "6"},
+                    {"key": "7", "title": "7"}
+                ]}
+            ]
+        }
+
+        tree_root = TreeOperate.from_dict(_data)
+        tree_root.find("2").append(TreeOperate.from_dict({"key": "8", "title": "8"}))
+        print(tree_root.find("8"))
+        tree_root.find("8").remove()
+        print(tree_root.find("8"))
+
+    """
+
+    def __init__(self, key=None):
+        self.key = key
+        self.pid = None
+        self.data = {}
+        self.parent = None  # type: Optional[TreeOperate]
+        self.__children = []  # type: List[TreeOperate]
+
+    def __str__(self):
+        return str({
+            "key": self.key,
+            "pid": self.pid,
+            "data": self.data,
+            "children": self.__children
+        })
+
+    @staticmethod
+    def from_dict(data):
+        """
+
+        从dict对象中返回TreeOperate对象
+
+        :param data: dict
+        :return: TreeOperate
+
+        """
+        tree = TreeOperate(data.get("key", None))
+        for d in data:
+            if d not in ["key", "children"]:
+                tree.data[d] = data[d]
+        for i in data.get("children", []):
+            tree.append(TreeOperate.from_dict(i))
+        return tree
+
+    @property
+    def children(self):
+        return self.__children
+
+    def append(self, sub_tree: "TreeOperate"):
+        """
+
+        为当前节点添加子节点，节点类型必须是TreeOperate类型
+
+        :param sub_tree: 子类型节点
+        :return: None
+
+        """
+        if not isinstance(sub_tree, TreeOperate):
+            raise TypeError("sub_tree must be of type TreeOperate")
+        sub_tree.pid = self.key
+        sub_tree.parent = self
+        self.__children.append(sub_tree)
+
+    def find(self, key: str):
+        """
+
+        根据key值查找节点
+
+        :param key: key值
+        :return: TreeOperate
+
+        """
+        if self.key == key:
+            return self
+        else:
+            for i in self.__children:
+                result = i.find(key)
+                if result:
+                    return result
+        return None
+
+    def remove(self, key=None):
+        """
+
+        删除节点，如果传递key值，将删除当前节点下匹配的子孙节点，
+        如果不传递key值将当前节点从父节点中删除
+
+        :param key: [可选] key值
+        :return:
+
+        """
+        if key is None:
+            if self.parent is not None:
+                self.parent.__children.remove(self)
+        else:
+            remove_child = self.find(key)
+            if remove_child:
+                remove_child.parent.__children.remove(remove_child)
+
+    def to_dict(self, flat=False):
+        """
+
+        输出dict类型数据，用于json化
+
+        :param flat: 是否将data参数内容直接映射到对象
+        :return: dict
+
+        """
+        result = dict(key=self.key, pid=self.pid)
+        if flat:
+            for j in self.data:
+                result[j] = self.data[j]
+        else:
+            result["data"] = self.data
+        children = []
+        for i in self.__children:
+            children.append(i.to_dict(flat))
+        result["children"] = children
+        return result
