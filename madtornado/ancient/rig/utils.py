@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Callable, TypeVar
 
 
 def require(path):
@@ -401,14 +401,16 @@ def write(path, data):
         fp.write(data)
 
 
+T = TypeVar("T")
+ParseCallable = Callable[["TreeOperate", List[T], int], T]
+
+
 class TreeOperate:
     """
 
     TreeOperate允许你操作一颗树型结构数据，支持数据导入和导出，数据必须含有key唯一标识，
     子元素必须存储在children键值下
-
     示例内容::
-
         _data = {
             "key": "1",
             "title": "root",
@@ -423,7 +425,6 @@ class TreeOperate:
                 ]}
             ]
         }
-
         tree_root = TreeOperate.from_dict(_data)
         tree_root.find("2").append(TreeOperate.from_dict({"key": "8", "title": "8"}))
         print(tree_root.find("8"))
@@ -452,7 +453,6 @@ class TreeOperate:
         """
 
         从dict对象中返回TreeOperate对象
-
         :param data: dict
         :return: TreeOperate
 
@@ -465,6 +465,18 @@ class TreeOperate:
             tree.append(TreeOperate.from_dict(i))
         return tree
 
+    @staticmethod
+    def from_file(path):
+        """
+
+        从json文件中读取数据
+
+        :param path: json文件路径
+        :return: TreeOperate
+
+        """
+        return TreeOperate.from_dict(require(path))
+
     @property
     def children(self):
         return self.__children
@@ -473,7 +485,6 @@ class TreeOperate:
         """
 
         为当前节点添加子节点，节点类型必须是TreeOperate类型
-
         :param sub_tree: 子类型节点
         :return: None
 
@@ -488,7 +499,6 @@ class TreeOperate:
         """
 
         根据key值查找节点
-
         :param key: key值
         :return: TreeOperate
 
@@ -507,7 +517,6 @@ class TreeOperate:
 
         删除节点，如果传递key值，将删除当前节点下匹配的子孙节点，
         如果不传递key值将当前节点从父节点中删除
-
         :param key: [可选] key值
         :return:
 
@@ -520,11 +529,42 @@ class TreeOperate:
             if remove_child:
                 remove_child.parent.__children.remove(remove_child)
 
+    def parse(self, callback: ParseCallable, deep=0):
+        """
+
+        遍历定制解析规则，返回解析内容
+
+        :param callback: Callable[["TreeOperate", List[T], int], T] 解析回调函数返回解析结果
+        :param deep: 当前解析深度，默认不需要填写，用于回调函数接收判断所在层级
+        :return: 解析结果
+
+        """
+        child_parse_list = []
+        for i in self.__children:
+            child_parse_list.append(i.parse(callback, deep + 1))
+        return callback(self, child_parse_list, deep)
+
+    def count(self):
+        """
+
+        统计树型结构节点数量
+
+        :return: 节点数量
+
+        """
+        total = 0
+
+        def ct(_a, _b, _c):
+            nonlocal total
+            total += 1
+
+        self.parse(ct)
+        return total
+
     def to_dict(self, flat=False):
         """
 
         输出dict类型数据，用于json化
-
         :param flat: 是否将data参数内容直接映射到对象
         :return: dict
 
