@@ -54,6 +54,6 @@ class ResponseModel:
 
         """
         if encode_date:
-            return json.dumps(data, cls=DateEncoder)
+            return json.dumps(data, cls=DateEncoder, ensure_ascii=False)
         else:
             return json.dumps(data)

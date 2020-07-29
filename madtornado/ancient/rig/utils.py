@@ -1,18 +1,19 @@
 from typing import List, Optional, Callable, TypeVar
 
 
-def require(path):
+def require(path, encoding="utf-8"):
     """
 
     有时你可能只是需要从文件中读取到json数据，这是require函数将根据
     获取到的path，返回dict对象，相当方便，该函数同样类似于json.load
 
     :param path:
+    :param encoding:
     :return: dict
 
     """
     import json
-    fp = open(path, "r")
+    fp = open(path, "r", encoding=encoding)
     data = fp.read()
     fp.close()
     try:
@@ -373,31 +374,33 @@ def retry(freq=3, retry_callback=None):
     return decorator
 
 
-def read(path):
+def read(path, encoding="utf-8"):
     """
 
     快捷读取文件函数
 
     :param path: 文件路径
+    :param encoding:
     :return: 读取的文件内容
 
     """
-    with open(path, "r", encoding="utf-8") as fp:
+    with open(path, "r", encoding=encoding) as fp:
         result = fp.read()
     return result
 
 
-def write(path, data):
+def write(path, data, encoding="utf-8"):
     """
 
     快捷写入文件函数
 
     :param path: 文件路径
     :param data: 写入数据
+    :param encoding:
     :return: None
 
     """
-    with open(path, "w", encoding="utf-8") as fp:
+    with open(path, "w", encoding=encoding) as fp:
         fp.write(data)
 
 

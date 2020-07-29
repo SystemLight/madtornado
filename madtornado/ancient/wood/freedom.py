@@ -53,13 +53,21 @@ def get_safe_path(self: AbstractBaseHandler, *path):
         return self.throw(400, "Illegal path")
 
 
-# @freedom.route(url=r"/(.+(?<!\.json)$)")
+@freedom.route(url=r"/(.+(?<!\.json)$)")
 class FreedomPathHandler(AbstractBaseHandler):
 
     async def get(self, path):
         """
 
         获取路径下所有JSON文件列表
+
+        调用地址::
+
+            http://127.0.0.1:8095/freedom/*path
+
+            get: *path代表具体路径与本地磁盘空间进行映射如foo路径下的bar http://127.0.0.1:8095/freedom/foo/bar
+
+            可选参数：need_data(是否需要数据一起返回，*代表所有文件需要数据，如果只想取指定文件用逗号分隔)
 
         :param path: 查找路径
         :return: None
@@ -89,6 +97,12 @@ class FreedomPathHandler(AbstractBaseHandler):
 
         新增一个路径，递归添加
 
+        调用地址::
+
+            http://127.0.0.1:8095/freedom/*path
+
+            post: *path代表具体路径与本地磁盘空间进行映射如foo路径下的bar http://127.0.0.1:8095/freedom/foo/bar
+
         :param path: 查找路径
         :return: None
 
@@ -115,6 +129,12 @@ class FreedomPathHandler(AbstractBaseHandler):
 
         删除一个路径及其路径下的所有内容，危险操作
 
+        调用地址::
+
+            http://127.0.0.1:8095/freedom/*path
+
+            delete: *path代表具体路径与本地磁盘空间进行映射如foo路径下的bar http://127.0.0.1:8095/freedom/foo/bar
+
         :param path: 查找路径
         :return: None
 
@@ -123,7 +143,7 @@ class FreedomPathHandler(AbstractBaseHandler):
         self.write_ok()
 
 
-# @freedom.route(url=r"/(.+\.json$)")
+@freedom.route(url=r"/(.+\.json$)")
 class FreedomHandler(AbstractBaseHandler):
 
     async def get(self, path):
@@ -131,6 +151,14 @@ class FreedomHandler(AbstractBaseHandler):
 
         返回指定路径下json文件内容，接受auto_create参数，是否当
         文件不存在时自动创建相应json文件并返回
+
+        调用地址::
+
+            http://127.0.0.1:8095/freedom/*path.json
+
+            get: *path代表具体路径与本地磁盘空间进行映射如foo路径下的bar.json http://127.0.0.1:8095/freedom/foo/bar.json
+
+            可选参数：auto_create(当文件不存在时，是否自动创建空文件并返回)
 
         :param path: 查找路径
         :return: None
@@ -153,6 +181,12 @@ class FreedomHandler(AbstractBaseHandler):
 
         增加一个JSON文件，数据传入body并且以json格式传入
 
+        调用地址::
+
+            http://127.0.0.1:8095/freedom/*path.json
+
+            post: *path代表具体路径与本地磁盘空间进行映射如foo路径下的bar.json http://127.0.0.1:8095/freedom/foo/bar.json
+
         :param path: 查找路径
         :return: None
 
@@ -169,6 +203,14 @@ class FreedomHandler(AbstractBaseHandler):
         """
 
         更新一个json文件
+
+        调用地址::
+
+            http://127.0.0.1:8095/freedom/*path.json
+
+            put: *path代表具体路径与本地磁盘空间进行映射如foo路径下的bar.json http://127.0.0.1:8095/freedom/foo/bar.json
+
+            body: 用JSON格式派发数据
 
         :param path: 查找路径
         :return: None
@@ -187,6 +229,12 @@ class FreedomHandler(AbstractBaseHandler):
         """
 
         删除一个json文件
+
+        调用地址::
+
+            http://127.0.0.1:8095/freedom/*path.json
+
+            delete: *path代表具体路径与本地磁盘空间进行映射如foo路径下的bar.json http://127.0.0.1:8095/freedom/foo/bar.json
 
         :param path: 查找路径
         :return: None
