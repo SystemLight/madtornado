@@ -8,7 +8,7 @@
     使用举例：
     <input type="file" id="file">
     <button onclick="fd()">按钮</button>
-    <script src="./spark-md5.min.js"></script>
+    <script src="https://unpkg.com/spark-md5@3.0.1/spark-md5.min.js"></script>
     <script src="./upload.js"></script>
     <script>
         let fileEl = document.getElementById("file");
