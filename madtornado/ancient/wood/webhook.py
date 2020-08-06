@@ -3,6 +3,8 @@ from ..rig import register
 from ..rig.utils import kill_form_port
 from ..conf import c_parser
 
+from tornado.log import app_log
+
 import os
 
 """
@@ -46,6 +48,13 @@ class WebHook(Base):
                 result = cmd.split("|")
                 if len(result) > 1:
                     kill_form_port(result[1])
-                os.spawnv(os.P_NOWAIT, result[0], [result[0]])
+                if self.get_argument("use_bat", None):
+                    os.spawnv(os.P_NOWAIT, result[0], [result[0]])
+                    app_log.info("Process: " + result[0])
+                else:
+                    with open(result[0], "r") as fp:
+                        for c in fp:
+                            os.system(c)
+                            app_log.info("Process: " + c)
                 break
         self.write_ok()
