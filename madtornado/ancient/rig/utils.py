@@ -1,4 +1,6 @@
 from typing import List, Optional, Callable, TypeVar
+import os
+import platform
 
 
 def require(path, encoding="utf-8"):
@@ -8,7 +10,6 @@ def require(path, encoding="utf-8"):
     获取到的path，返回dict对象，相当方便，该函数同样类似于json.load
 
     :param path:
-    :param encoding:
     :return: dict
 
     """
@@ -583,3 +584,20 @@ class TreeOperate:
             children.append(i.to_dict(flat))
         result["children"] = children
         return result
+
+
+def kill_form_port(port):
+    """
+
+    传入端口号，杀死进程
+
+    :param port: 端口号，int类型
+    :return: None
+
+    """
+    port = str(port)
+    if platform.system() == 'Windows':
+        command = """for /f "tokens=5" %i in ('netstat -ano ^| find \"""" + port + """\" ') do (taskkill /f /pid %i)"""
+    else:
+        command = """kill -9 $(netstat -nlp | grep :""" + port + """ | awk '{print $7}' | awk -F "/" '{print $1}')"""
+    os.system(command)
