@@ -1,6 +1,6 @@
 from ..handlers.inheritHandler import Base
 from ..rig import register
-from ..rig.utils import kill_form_port
+from ..rig.utils import kill_form_port, require, rinin
 from ..conf import c_parser
 
 from tornado.log import app_log
@@ -8,33 +8,44 @@ from tornado.log import app_log
 import os
 
 """
+
 webhook模块允许你通过配置文件注册webhook以运行指定脚本程序。
 
-如需使用freedom file protocol请将模块的路由注释取消掉
+如需使用webhook请将模块的路由注释取消掉
+
 """
 
 webhook = register.Router(prefix="/webhook")
 rf = register.rf
-webhook_register_pool = c_parser.options("tornado-webhook")
+
+GOGS_CONF_PATH = c_parser.get("tornado-webhook", "gogs")
 
 
-# @webhook.route(url=rf.s("name").url)
-class WebHook(Base):
+@webhook.route(prefix="gogs", url=rf.s("name").url)
+class GogsWebHookHandler(Base):
     """
 
-    允许你通过配置文件注册webhook以运行指定脚本程序
+    允许你通过配置文件注册webhook以运行指定脚本程序，该指定脚本程序一般用于自动部署其它应用程序
 
     访问地址::
 
-        /webhook/:name(注册到配置文件的名称)
+        /webhook/gogs/:name(注册到配置文件的名称)
 
     配置举例::
 
         [tornado-webhook]
-        example=c://example.bat|8095
+        gogs=gogs webhook 配置文件路径
 
-        8095为部署程序的端口号，使用|分开脚本路径，如果指定则会根据该端口自动杀死程序进程，以进行重新自动部署，
-        脚本为部署应用程序的详细执行过程，注意脚本路径只能是绝对路径
+        {
+          "注册name名称": {
+            "shell": "C:\\netcoreapps\\update.bat", //执行脚本
+            "analysis_execution": true, // 是否解析，当注册为windows服务时必须解析执行
+            "app_port": 5000,  // 应用程序端口，用于自动部署该程序时自动重启该程序，可不填写，将不会重启应用
+            "branch": [  // 当指定分支被推送时进行自动部署
+              "master"
+            ]
+          }
+        }
 
     """
 
@@ -42,19 +53,26 @@ class WebHook(Base):
     #     await self.post(name)
 
     async def post(self, name):
-        for i in webhook_register_pool:
-            if name == i:
-                cmd = c_parser["tornado-webhook"][i]
-                result = cmd.split("|")
-                if len(result) > 1:
-                    kill_form_port(result[1])
-                if self.get_argument("use_bat", None):
-                    os.spawnv(os.P_NOWAIT, result[0], [result[0]])
-                    app_log.info("Process: " + result[0])
-                else:
-                    with open(result[0], "r") as fp:
-                        for c in fp:
-                            os.system(c)
-                            app_log.info("Process: " + c)
-                break
+        commit_data = self.get_body2json()
+        now_branch = commit_data["ref"]
+
+        conf = require(GOGS_CONF_PATH)
+        name_conf = conf.get(name, None)
+
+        if not name_conf:
+            return self.throw(200, "No registered instructions")
+
+        branch = name_conf.get("branch", None)
+        if rinin(now_branch, branch) is None:
+            return self.write_ok()
+
+        shell = name_conf.get("shell", None)
+        app_port = name_conf.get("app_port", None)
+
+        if app_port:
+            kill_form_port(str(app_port))
+
+        os.spawnv(os.P_NOWAIT, shell, [shell])
+        app_log.info("Process: " + shell)
+
         self.write_ok()

@@ -8,11 +8,13 @@ import shutil
 import json
 
 """
+
 freedom模块为了实现freedom file protocol，旨在使用一个API接口完成数据存储功能，
 适用于高敏捷开发模式下不依赖后端逻辑，尽量在前端完成所有业务处理，通过接口直接提供
 存储能力。
 
 如需使用freedom file protocol请将模块的路由注释取消掉
+
 """
 
 freedom = register.Router(prefix="/freedom/file/")

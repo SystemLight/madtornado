@@ -6,14 +6,16 @@ from ..rig import check
 from tornado import gen
 
 """
+
 如果需要分块上传方案，请将三个类的路由注释取消掉，让路由可以正常注册
 前端代码可以配合static/js下面的upload.js一起使用
+
 """
 
-file_router = register.Router(prefix="/file")
+file = register.Router(prefix="/file")
 
 
-# @file_router.route(url="/exist")
+# @file.route(url="/exist")
 class ExistFileHandler(Base):
     """
 
@@ -42,7 +44,7 @@ class ExistFileHandler(Base):
             self.throw(406, "非法请求")
 
 
-# @file_router.route(url="/upload")
+# @file.route(url="/upload")
 class UploadFileHandler(Base):
     """
 
@@ -99,7 +101,7 @@ class UploadFileHandler(Base):
             self.throw(406, "缺少{0}参数".format(message.key))
 
 
-# @file_router.route(url="/merge")
+# @file.route(url="/merge")
 class MergeFileHandler(Base):
     """
 
