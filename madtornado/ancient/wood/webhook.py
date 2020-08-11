@@ -21,6 +21,18 @@ rf = register.rf
 GOGS_CONF_PATH = c_parser.get("tornado-webhook", "gogs")
 
 
+def exec_hook(name_conf):
+    shell = name_conf.get("shell", None)
+    app_port = name_conf.get("app_port", None)
+
+    shell_path = os.path.abspath(shell)
+    if app_port:
+        kill_form_port(str(app_port))
+
+    os.spawnv(os.P_NOWAIT, shell_path, [shell_path])
+    app_log.info("Process: " + shell)
+
+
 @webhook.route(prefix="gogs", url=rf.s("name").url)
 class GogsWebHookHandler(Base):
     """
@@ -52,7 +64,7 @@ class GogsWebHookHandler(Base):
     # async def get(self, name):
     #     await self.post(name)
 
-    async def post(self, name):
+    async def get(self, name):
         commit_data = self.get_body2json()
         now_branch = commit_data["ref"]
 
@@ -66,13 +78,6 @@ class GogsWebHookHandler(Base):
         if rinin(now_branch, branch) is None:
             return self.write_ok()
 
-        shell = name_conf.get("shell", None)
-        app_port = name_conf.get("app_port", None)
-
-        if app_port:
-            kill_form_port(str(app_port))
-
-        os.spawnv(os.P_NOWAIT, shell, [shell])
-        app_log.info("Process: " + shell)
+        exec_hook(name_conf)
 
         self.write_ok()
