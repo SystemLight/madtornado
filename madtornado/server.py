@@ -52,6 +52,7 @@ def default_routers():
     for p in json.loads(opt_static["url_prefix"]):
         path = None
         df = None
+        spa = None
         if type(p) == str:
             prefix = p
         else:
@@ -60,10 +61,12 @@ def default_routers():
                 path = p[1]
             if len(p) > 2:
                 df = p[2]
+            if len(p) > 3:
+                spa = p[3]
         static_routes.append((prefix + "/(.*)", ancient.dealHandler.StaticHandler, {
             "path": path or default_static_path,
             "default_filename": df or default_filename,
-            "prefix": prefix,
+            "spa_page": spa,
         }))
     static_route = (r"/(.*)", ancient.dealHandler.StaticHandler, {
         "path": default_static_path,
@@ -99,6 +102,7 @@ def routers():
     with open("log/webMap.log", "w", encoding="utf-8") as web_map:
         for r in ancient.register_route:
             web_map.write(str(r[0]) + "\n")
+        web_map.flush()
     print("The site map is generated !")
     return ancient.register_route
 
@@ -112,7 +116,7 @@ def set_log():
 
     """
     options.logging = "DEBUG"
-    options.log_file_prefix = "log/torStatus{0}.log".format(options.port)
+    options.log_file_prefix = os.path.join(opt_debug["log_dir"], "log/torStatus{0}.log".format(options.port))
     options.log_rotate_mode = "time"
     options.log_rotate_when = "D"
     options.log_rotate_interval = 1

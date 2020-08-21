@@ -1,4 +1,9 @@
-def require(path):
+from typing import List, Optional, Callable, TypeVar
+import os
+import platform
+
+
+def require(path, encoding="utf-8"):
     """
 
     有时你可能只是需要从文件中读取到json数据，这是require函数将根据
@@ -9,7 +14,7 @@ def require(path):
 
     """
     import json
-    fp = open(path, "r")
+    fp = open(path, "r", encoding=encoding)
     data = fp.read()
     fp.close()
     try:
@@ -370,29 +375,269 @@ def retry(freq=3, retry_callback=None):
     return decorator
 
 
-def read(path):
+def read(path, encoding="utf-8"):
     """
 
     快捷读取文件函数
 
     :param path: 文件路径
+    :param encoding:
     :return: 读取的文件内容
 
     """
-    with open(path, "r", encoding="utf-8") as fp:
+    with open(path, "r", encoding=encoding) as fp:
         result = fp.read()
     return result
 
 
-def write(path, data):
+def write(path, data, encoding="utf-8"):
     """
 
     快捷写入文件函数
 
     :param path: 文件路径
     :param data: 写入数据
+    :param encoding:
     :return: None
 
     """
-    with open(path, "w", encoding="utf-8") as fp:
+    with open(path, "w", encoding=encoding) as fp:
         fp.write(data)
+
+
+T = TypeVar("T")
+ParseCallable = Callable[["TreeOperate", List[T], int], T]
+
+
+class TreeOperate:
+    """
+
+    TreeOperate允许你操作一颗树型结构数据，支持数据导入和导出，数据必须含有key唯一标识，
+    子元素必须存储在children键值下
+    示例内容::
+        _data = {
+            "key": "1",
+            "title": "root",
+            "children": [
+                {"key": "2", "title": "2", "children": [
+                    {"key": "4", "title": "4"},
+                    {"key": "5", "title": "5"}
+                ]},
+                {"key": "3", "title": "3", "children": [
+                    {"key": "6", "title": "6"},
+                    {"key": "7", "title": "7"}
+                ]}
+            ]
+        }
+        tree_root = TreeOperate.from_dict(_data)
+        tree_root.find("2").append(TreeOperate.from_dict({"key": "8", "title": "8"}))
+        print(tree_root.find("8"))
+        tree_root.find("8").remove()
+        print(tree_root.find("8"))
+
+    """
+
+    def __init__(self, key=None):
+        self.key = key
+        self.pid = None
+        self.data = {}
+        self.parent = None  # type: Optional[TreeOperate]
+        self.__children = []  # type: List[TreeOperate]
+
+    def __str__(self):
+        return str({
+            "key": self.key,
+            "pid": self.pid,
+            "data": self.data,
+            "children": self.__children
+        })
+
+    @staticmethod
+    def from_dict(data):
+        """
+
+        从dict对象中返回TreeOperate对象
+        :param data: dict
+        :return: TreeOperate
+
+        """
+        tree = TreeOperate(data.get("key", None))
+        for d in data:
+            if d not in ["key", "children"]:
+                tree.data[d] = data[d]
+        for i in data.get("children", []):
+            tree.append(TreeOperate.from_dict(i))
+        return tree
+
+    @staticmethod
+    def from_file(path):
+        """
+
+        从json文件中读取数据
+
+        :param path: json文件路径
+        :return: TreeOperate
+
+        """
+        return TreeOperate.from_dict(require(path))
+
+    @property
+    def children(self):
+        return self.__children
+
+    def append(self, sub_tree: "TreeOperate"):
+        """
+
+        为当前节点添加子节点，节点类型必须是TreeOperate类型
+        :param sub_tree: 子类型节点
+        :return: None
+
+        """
+        if not isinstance(sub_tree, TreeOperate):
+            raise TypeError("sub_tree must be of type TreeOperate")
+        sub_tree.pid = self.key
+        sub_tree.parent = self
+        self.__children.append(sub_tree)
+
+    def find(self, key: str):
+        """
+
+        根据key值查找节点
+        :param key: key值
+        :return: TreeOperate
+
+        """
+        if self.key == key:
+            return self
+        else:
+            for i in self.__children:
+                result = i.find(key)
+                if result:
+                    return result
+        return None
+
+    def remove(self, key=None):
+        """
+
+        删除节点，如果传递key值，将删除当前节点下匹配的子孙节点，
+        如果不传递key值将当前节点从父节点中删除
+        :param key: [可选] key值
+        :return:
+
+        """
+        if key is None:
+            if self.parent is not None:
+                self.parent.__children.remove(self)
+        else:
+            remove_child = self.find(key)
+            if remove_child:
+                remove_child.parent.__children.remove(remove_child)
+
+    def parse(self, callback: ParseCallable, deep=0):
+        """
+
+        遍历定制解析规则，返回解析内容
+
+        :param callback: Callable[["TreeOperate", List[T], int], T] 解析回调函数返回解析结果
+        :param deep: 当前解析深度，默认不需要填写，用于回调函数接收判断所在层级
+        :return: 解析结果
+
+        """
+        child_parse_list = []
+        for i in self.__children:
+            child_parse_list.append(i.parse(callback, deep + 1))
+        return callback(self, child_parse_list, deep)
+
+    def count(self):
+        """
+
+        统计树型结构节点数量
+
+        :return: 节点数量
+
+        """
+        total = 0
+
+        def ct(_a, _b, _c):
+            nonlocal total
+            total += 1
+
+        self.parse(ct)
+        return total
+
+    def to_dict(self, flat=False):
+        """
+
+        输出dict类型数据，用于json化
+        :param flat: 是否将data参数内容直接映射到对象
+        :return: dict
+
+        """
+        result = dict(key=self.key, pid=self.pid)
+        if flat:
+            for j in self.data:
+                result[j] = self.data[j]
+        else:
+            result["data"] = self.data
+        children = []
+        for i in self.__children:
+            children.append(i.to_dict(flat))
+        result["children"] = children
+        return result
+
+
+def kill_form_port(port):
+    """
+
+    传入端口号，杀死进程
+
+    :param port: 端口号，int类型
+    :return: None
+
+    """
+    port = str(port)
+    if platform.system() == 'Windows':
+        command = """for /f "tokens=5" %i in ('netstat -ano ^| find \"""" + port + """\" ') do (taskkill /f /pid %i)"""
+    else:
+        command = """kill -9 $(netstat -nlp | grep :""" + port + """ | awk '{print $7}' | awk -F "/" '{print $1}')"""
+    os.system(command)
+
+
+def inin(content, pool):
+    """
+
+    查找指定内容是否存在于列表的字符串中，这种情况content一定要比列表中字符串短
+
+    举例::
+
+        inin("a",["asdf","fsfsdf"]) 将返回 "asdf"
+
+    :param content: 内容
+    :param pool: 列表
+    :return: 匹配内容
+
+    """
+    for p in pool:
+        if content in p:
+            return p
+    return None
+
+
+def rinin(content, pool):
+    """
+
+    查找指定内容是否存在于列表的字符串中，这种情况content一定要比列表中字符串长
+
+    举例::
+
+        inin("asdf",["a","fsfsdf"]) 将返回 "a"
+
+    :param content: 内容
+    :param pool: 列表
+    :return: 匹配内容
+
+    """
+    for p in pool:
+        if p in content:
+            return p
+    return None

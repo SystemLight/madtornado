@@ -1,5 +1,8 @@
+/webhook/gogs/([^\\/]+)$
 /index
 /home
+/freedom/file/(.+(?<!\.json)$)
+/freedom/file/(.+\.json$)
 /pong
 /s/(.*)
 /(.*)

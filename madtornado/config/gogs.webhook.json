@@ -1,0 +1,9 @@
+{
+  "mad": {
+    "shell": "resource/help.bat",
+    "app_port": null,
+    "branch": [
+      "master"
+    ]
+  }
+}

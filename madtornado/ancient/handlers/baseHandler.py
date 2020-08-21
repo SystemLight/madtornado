@@ -49,17 +49,6 @@ class BaseHandler(RequestHandler):
         self.cross_domain = None
 
     # @override
-    def initialize(self):
-        """
-
-        ``重写方法`` 当实例还没有生成之前会调用的函数
-
-        :return: None
-
-        """
-        pass
-
-    # @override
     def data_received(self, chunk):
         """
 
