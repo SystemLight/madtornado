@@ -1,6 +1,6 @@
 # madtornado | [中文文档](./README.zh.md)
 
-`Please use madtornado4 to experience Tornado development in MVC mode`
+Please use [madtornado4](https://github.com/SystemLight/madtornado4) to experience Tornado development in MVC mode
 
 [![Downloads](https://pepy.tech/badge/madtornado)](https://pepy.tech/project/madtornado)
 [![version](https://img.shields.io/pypi/v/madtornado)](https://pypi.python.org/pypi/madtornado)
