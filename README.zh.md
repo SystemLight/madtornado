@@ -1,5 +1,7 @@
 # madtornado
 
+现在你可以使用madtornado4去体会MVC模式的tornado开发，它不兼容现在的madtornado版本但是拥有更加友好的特性
+
 [![Downloads](https://pepy.tech/badge/madtornado)](https://pepy.tech/project/madtornado)
 [![version](https://img.shields.io/pypi/v/madtornado)](https://pypi.python.org/pypi/madtornado)
 [![codebeat badge](https://codebeat.co/badges/da82dbdb-eceb-4166-b9e9-2d290c5f608f)](https://codebeat.co/projects/github-com-systemlight-madtornado-master)
@@ -7,8 +9,8 @@
 [![Documentation Status](https://readthedocs.org/projects/madtornado/badge/?version=latest)](https://madtornado.readthedocs.io/zh/latest/?badge=latest)
 [![Gitter](https://badges.gitter.im/systemlight-madtornado/community.svg)](https://gitter.im/systemlight-madtornado/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-madtornado是一个tornado框架的快速构建工具   
-PyPI page: https://pypi.python.org/pypi/madtornado  
+madtornado是一个tornado框架的快速构建工具
+PyPI page: https://pypi.python.org/pypi/madtornado
 [原生tornado文档参考](https://www.osgeo.cn/tornado/index.html)
 
 # 拥有的特性
@@ -29,7 +31,7 @@ PyPI page: https://pypi.python.org/pypi/madtornado
 
 - 强化虚拟主机配置能力
 - 增强sql模块处理能力，采用链式查找方式，更加灵活
-- 增加注册路由描述功能，帮助生成网站地图时添加描述信息 
+- 增加注册路由描述功能，帮助生成网站地图时添加描述信息
 
 # 安装并创建一个madtornado项目
 

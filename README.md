@@ -1,5 +1,7 @@
 # madtornado | [中文文档](./README.zh.md)
 
+`Please use madtornado4 to experience Tornado development in MVC mode`
+
 [![Downloads](https://pepy.tech/badge/madtornado)](https://pepy.tech/project/madtornado)
 [![version](https://img.shields.io/pypi/v/madtornado)](https://pypi.python.org/pypi/madtornado)
 [![codebeat badge](https://codebeat.co/badges/da82dbdb-eceb-4166-b9e9-2d290c5f608f)](https://codebeat.co/projects/github-com-systemlight-madtornado-master)
@@ -7,7 +9,7 @@
 [![Documentation Status](https://readthedocs.org/projects/madtornado/badge/?version=stable)](https://madtornado.readthedocs.io/zh/latest/?badge=latest)
 [![Gitter](https://badges.gitter.im/systemlight-madtornado/community.svg)](https://gitter.im/systemlight-madtornado/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-Madtornado is a project templates for Tornado framework and quickly generate the Tornado project.  
+Madtornado is a project templates for Tornado framework and quickly generate the Tornado project.
 PyPI page: https://pypi.python.org/pypi/madtornado
 
 # Installation
